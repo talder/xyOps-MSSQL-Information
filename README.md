@@ -1,3 +1,6 @@
+<p align="center"><img src="https://raw.githubusercontent.com/talder/xyOps-MSSQL-Information/refs/heads/main/logo.png" height="108" alt="Logo"/></p>
+<h1 align="center">MSSQL Information Plugin</h1>
+
 # xyOps MSSQL Information Plugin
 
 Collect comprehensive information from Microsoft SQL Server instances using PowerShell and [dbatools](https://dbatools.io). This plugin gathers server details, Availability Group configurations, database information, and user accounts in a single execution.
@@ -31,6 +34,25 @@ Collect comprehensive information from Microsoft SQL Server instances using Powe
   - The plugin will attempt to install dbatools using `Install-Module -Name dbatools -Scope CurrentUser`
   - Requires internet connection for first-time installation
 
+### Secret Vault Configuration
+
+**IMPORTANT**: This plugin requires SQL Server credentials to be stored in an xyOps secret vault for secure authentication.
+
+#### Setting Up the Secret Vault
+
+1. **Create a Secret Vault** in xyOps (e.g., named `MSSQL-INFO-PLUGIN`)
+2. **Add the following keys** to the vault:
+   - `MSSQLINFO_USERNAME` - Your SQL Server username
+   - `MSSQLINFO_PASSWORD` - Your SQL Server password
+
+3. **Attach the vault** to the plugin when configuring it
+
+The plugin will automatically read credentials from these environment variables at runtime.
+
+**Note**: Username and password are NOT passed as plugin parameters. All authentication is handled securely through environment variables populated from the secret vault.
+
+For detailed instructions on creating and managing secret vaults, see the [xyOps Secrets Documentation](https://github.com/pixlcore/xyops/blob/main/docs/secrets.md).
+
 ### SQL Server Permissions
 
 **IMPORTANT**: The SQL Server user account must have sufficient permissions to query:
@@ -59,14 +81,14 @@ Recommended: Use a SQL Server login with `sysadmin` role or a user with the foll
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | MSSQL server | text | Yes | - | SQL Server address (hostname or IP) |
-| Username | text | Yes | - | SQL Server username for authentication |
-| Password | text | Yes | - | SQL Server password |
 | Databases to exclude | text | No | - | Comma-separated list of database names to exclude (e.g., "DB1,DB2,DB3") |
 | Use encryption | checkbox | No | false | Enable encrypted connection |
 | Trust certificate | checkbox | No | false | Trust server certificate (bypass validation) |
 | Export format | dropdown | No | JSON | Export format: JSON, CSV, or MD (Markdown) |
 | Export to file | checkbox | No | false | Export data to file(s) in addition to job output |
 | Enable debug mode | checkbox | No | false | Enable debug output |
+
+**Authentication**: Credentials (`MSSQLINFO_USERNAME` and `MSSQLINFO_PASSWORD`) must be configured in a secret vault attached to this plugin. See [Secret Vault Configuration](#secret-vault-configuration) above.
 
 **Note**: System databases (master, model, msdb, tempdb) are automatically excluded from collection.
 
@@ -188,14 +210,14 @@ This JSON data is accessible via the `data` bucket or can be passed to subsequen
 
 ## Usage Examples
 
+**Note**: All examples require a secret vault with `MSSQLINFO_USERNAME` and `MSSQLINFO_PASSWORD` to be attached to the plugin.
+
 ### Basic Server Inventory (Markdown Display)
 
 Collect information from a standalone SQL Server with Markdown tables:
 
 **Parameters:**
 - MSSQL server: `sqlserver.company.com`
-- Username: `sa`
-- Password: `YourPassword`
 - Export format: `MD` (default)
 
 ### JSON Export for Workflows
@@ -204,8 +226,6 @@ Collect data in JSON format for workflow processing:
 
 **Parameters:**
 - MSSQL server: `sqlserver.company.com`
-- Username: `monitoring_user`
-- Password: `MonitorPass`
 - Export format: `JSON`
 - Use encryption: ✓ (checked)
 
@@ -215,8 +235,6 @@ Export data to separate CSV files for Excel analysis:
 
 **Parameters:**
 - MSSQL server: `ag-listener.company.com`
-- Username: `sa`
-- Password: `YourPassword`
 - Export format: `CSV`
 - Export to file: ✓ (checked)
 
@@ -228,8 +246,6 @@ Collect information but skip certain databases:
 
 **Parameters:**
 - MSSQL server: `sqlserver.company.com`
-- Username: `sa`
-- Password: `YourPassword`
 - Exclude databases: `TestDB,StagingDB,TempData`
 - Export format: `MD`
 
@@ -373,4 +389,4 @@ Tim Alderweireldt
 
 ## Version
 
-1.0.0
+1.0.1

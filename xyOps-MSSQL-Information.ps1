@@ -128,8 +128,8 @@ if ($debug) {
 }
 
 $server = Get-ParamValue -ParamsObject $params -ParamName 'server'
-$username = Get-ParamValue -ParamsObject $params -ParamName 'username'
-$password = Get-ParamValue -ParamsObject $params -ParamName 'password'
+$username = $env:MSSQLINFO_USERNAME
+$password = $env:MSSQLINFO_PASSWORD
 $excludeDatabasesRaw = Get-ParamValue -ParamsObject $params -ParamName 'excludedatabases'
 $excludeDatabases = if ([string]::IsNullOrWhiteSpace($excludeDatabasesRaw)) { @() } else { $excludeDatabasesRaw -split ',' | ForEach-Object { $_.Trim() } }
 $exportFormatRaw = Get-ParamValue -ParamsObject $params -ParamName 'exportformat'
@@ -138,17 +138,25 @@ $exportToFileRaw = Get-ParamValue -ParamsObject $params -ParamName 'exporttofile
 $exportToFile = if ($exportToFileRaw -eq $true -or $exportToFileRaw -eq "true" -or $exportToFileRaw -eq "True") { $true } else { $false }
 
 # Validate required parameters
-$required = @('server', 'username', 'password')
 $missing = @()
-foreach ($field in $required) {
-    $value = Get-ParamValue -ParamsObject $params -ParamName $field
-    if ([string]::IsNullOrWhiteSpace($value)) {
-        $missing += $field
-    }
+
+# Check server parameter
+if ([string]::IsNullOrWhiteSpace($server)) {
+    $missing += 'server'
+}
+
+# Check username from environment variable
+if ([string]::IsNullOrWhiteSpace($username)) {
+    $missing += 'MSSQLINFO_USERNAME (environment variable)'
+}
+
+# Check password from environment variable
+if ([string]::IsNullOrWhiteSpace($password)) {
+    $missing += 'MSSQLINFO_PASSWORD (environment variable)'
 }
 
 if ($missing.Count -gt 0) {
-    Send-Error -Code 2 -Description "Missing required parameters: $($missing -join ', ')"
+    Send-Error -Code 2 -Description "Missing required parameters: $($missing -join ', '). Credentials must be provided via secret vault environment variables."
     exit 1
 }
 
