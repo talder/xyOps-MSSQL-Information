@@ -1,9 +1,18 @@
 <p align="center"><img src="https://raw.githubusercontent.com/talder/xyOps-MSSQL-Information/refs/heads/main/logo.png" height="108" alt="Logo"/></p>
-<h1 align="center">MSSQL Information Plugin</h1>
+<h1 align="center">MSSQL Information</h1>
 
 # xyOps MSSQL Information Plugin
 
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/talder/xyOps-MSSQL-Information/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PowerShell](https://img.shields.io/badge/PowerShell-7.0+-blue.svg)](https://github.com/PowerShell/PowerShell)
+[![dbatools](https://img.shields.io/badge/dbatools-2.0+-green.svg)](https://dbatools.io)
+
 Collect comprehensive information from Microsoft SQL Server instances using PowerShell and [dbatools](https://dbatools.io). This plugin gathers server details, Availability Group configurations, database information, and user accounts in a single execution.
+
+## Disclaimer
+
+**USE AT YOUR OWN RISK.** This software is provided "as is", without warranty of any kind, express or implied. The author and contributors are not responsible for any damages, data loss, system downtime, or other issues that may arise from the use of this software. Always test in non-production environments before running against production systems. By using this plugin, you acknowledge that you have read, understood, and accepted this disclaimer.
 
 ## Features
 
